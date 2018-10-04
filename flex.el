@@ -142,9 +142,9 @@
   (font-lock-add-keywords
    nil
    '(
-     ("\\(%%\\)\\([^%]+\\)\\(%%\\)" 1 'flex-font-lock-pattern-delimiter)
-     ("\\(%%\\)\\([^%]+\\)\\(%%\\)" 2 'flex-font-lock-pattern-content)
-     ("\\(%%\\)\\([^%]+\\)\\(%%\\)" 3 'flex-font-lock-pattern-delimiter)
+     ("\\(%%\n\\)\\(\\(.+\n\\)+\\)\\(%%\\)" 1 'flex-font-lock-pattern-delimiter)
+     ("\\(%%\n\\)\\(\\(.+\n\\)+\\)\\(%%\\)" 2 'flex-font-lock-pattern-content)
+     ("\\(%%\n\\)\\(\\(.+\n\\)+\\)\\(%%\\)" 4 'flex-font-lock-pattern-delimiter)
      ("\\(%{\\)\\([^%{}]+\\)\\(%}\\)" 1 'flex-font-lock-declare-delimiter)
      ("\\(%{\\)\\([^%{}]+\\)\\(%}\\)" 3 'flex-font-lock-declare-delimiter)
      ))
