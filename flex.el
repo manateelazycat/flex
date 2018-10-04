@@ -151,7 +151,25 @@
   (set (make-local-variable 'font-lock-keywords-only) t)
   (font-lock-mode 1))
 
-(defalias 'flex-indent-command 'c-indent-command)
+(defun flex-indent-command (&optional arg)
+  (interactive "P")
+  (if (equal arg '(4))
+      (c-indent-command)
+    (save-excursion
+      (beginning-of-line)
+      (if (looking-at "^\\s-*\\(%}\\|%{\\|%%\\)\\s-*")
+          (let (start end)
+            (setq start (point))
+            (end-of-line)
+            (setq end (point))
+            (kill-region start
+                         (save-excursion
+                           (beginning-of-line)
+                           (if (search-forward-regexp "\\s-*" end t)
+                               (point)
+                             start)
+                           )))
+        (c-indent-command)))))
 
 (provide 'flex)
 
