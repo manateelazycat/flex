@@ -14,10 +14,6 @@ It's set in your ~/.emacs like this:
 (add-to-list 'load-path "<path-to-flex") ; add flex to your load-path
 (require 'flex)
 
-(dolist (elt-cons '(
-                    ("\\.l$" . flex-mode)
-                    ))
-  (add-to-alist 'auto-mode-alist elt-cons))
-
+(add-to-list 'auto-mode-alist '("\\.l$" . flex-mode))
 (autoload 'flex-mode "flex")
 ```
