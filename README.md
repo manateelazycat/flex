@@ -11,7 +11,8 @@ The load-path is usually ~/elisp/.
 It's set in your ~/.emacs like this:
 
 ```Elisp
-(add-to-list 'load-path "<path-to-flex") ; add flex to your load-path
+(add-to-list 'load-path (expand-file-name "~/elisp"))
+
 (require 'flex)
 
 (add-to-list 'auto-mode-alist '("\\.l$" . flex-mode))
