@@ -11,7 +11,7 @@ The load-path is usually ~/elisp/.
 It's set in your ~/.emacs like this:
 
 ```Elisp
-(add-to-list 'load-path "<path-to-color-rg>") ; add color-rg to your load-path
+(add-to-list 'load-path "<path-to-flex") ; add flex to your load-path
 (require 'flex)
 
 (dolist (elt-cons '(
