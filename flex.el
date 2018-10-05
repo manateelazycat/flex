@@ -144,7 +144,7 @@
    '(
      ("\\(^\\(%{\\|%}\\)\\)" 1 'flex-font-lock-declare-delimiter)
      ("\\(^%%\\)" 1 'flex-font-lock-pattern-delimiter)
-     ("\\(^\\([\"]\\|[\[]\\|[\.]\\)[^\{]+\\)\\({.*}\\)" 1 'flex-font-lock-pattern-content)
+     ("\\(^\\([\"]\\|[\[]\\|[\.]\\|[\\]\\)[^\{]+\\)\\({.*}\\)" 1 'flex-font-lock-pattern-content)
      ))
   (set (make-local-variable 'font-lock-keywords-only) t)
   (font-lock-mode 1))
