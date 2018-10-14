@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-10-04 08:41:04
-;; Version: 0.3
-;; Last-Updated: 2018-10-14 14:03:36
+;; Version: 0.4
+;; Last-Updated: 2018-10-14 14:10:08
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/flex.el
 ;; Keywords:
@@ -68,6 +68,7 @@
 ;; 2018/10/14
 ;;      * Use overlay instead regexp to match pattern content.
 ;;      * Adjust overlay regexp to match any pattern line.
+;;      * Support | pattern.
 ;;
 ;; 2018/10/04
 ;;      * First released.
@@ -188,14 +189,15 @@
       ;; Highlight patterns.
       (when (and pattern-start pattern-end)
         (goto-char pattern-start)
-        (while (search-forward-regexp "^[^ \n]+[^{\n]+[{]?" pattern-end t)
+        (while (search-forward-regexp "^[^ \n]+[^{\n]+[{|]?" pattern-end t)
           (let (start end overlay)
             ;; Set end bound of pattern.
             (setq end
-                  (if (string-suffix-p "{" (match-string 0))
-                      ;; Backward one char if pattern end with char '{'
+                  (if (or (string-suffix-p "{" (match-string 0))
+                          (string-suffix-p "|" (match-string 0)))
+                      ;; Backward one char if pattern end with char '{' or '|'
                       (- (point) 1)
-                    ;; Record current point if pattern not end with char '{'
+                    ;; Otherwise record current point.
                     (point)))
             ;; Set start bound of pattern.
             (beginning-of-line)
