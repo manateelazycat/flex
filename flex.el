@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-10-04 08:41:04
-;; Version: 0.2
-;; Last-Updated: 2018-10-14 11:42:52
+;; Version: 0.3
+;; Last-Updated: 2018-10-14 14:03:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/flex.el
 ;; Keywords:
@@ -67,6 +67,7 @@
 ;;
 ;; 2018/10/14
 ;;      * Use overlay instead regexp to match pattern content.
+;;      * Adjust overlay regexp to match any pattern line.
 ;;
 ;; 2018/10/04
 ;;      * First released.
@@ -187,15 +188,24 @@
       ;; Highlight patterns.
       (when (and pattern-start pattern-end)
         (goto-char pattern-start)
-        (while (search-forward-regexp "^[^ \n]+[^{\n]+{" pattern-end t)
+        (while (search-forward-regexp "^[^ \n]+[^{\n]+[{]?" pattern-end t)
           (let (start end overlay)
-            (setq end (- (point) 1))
+            ;; Set end bound of pattern.
+            (setq end
+                  (if (string-suffix-p "{" (match-string 0))
+                      ;; Backward one char if pattern end with char '{'
+                      (- (point) 1)
+                    ;; Record current point if pattern not end with char '{'
+                    (point)))
+            ;; Set start bound of pattern.
             (beginning-of-line)
             (setq start (point))
-            (end-of-line)
+            ;; Add pattern overlay.
             (setq overlay (make-overlay start end))
             (overlay-put overlay 'face 'flex-font-lock-pattern-content-face)
             (add-to-list 'flex-pattern-overlays overlay)
+            ;; Rest point to end of line to continue search.
+            (end-of-line)
             ))))))
 
 (defun flex-highlight-keywords ()
