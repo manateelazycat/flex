@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-10-04 08:41:04
-;; Version: 0.1
-;; Last-Updated: 2018-10-04 08:41:04
+;; Version: 0.2
+;; Last-Updated: 2018-10-14 11:42:52
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/flex.el
 ;; Keywords:
@@ -64,6 +64,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2018/10/14
+;;      * Use overlay instead regexp to match pattern content.
 ;;
 ;; 2018/10/04
 ;;      * First released.
@@ -132,9 +135,68 @@
   ;; Highlight keywords.
   (flex-highlight-keywords)
 
+  ;; Highlight pattern overlays.
+  (set (make-local-variable 'flex-pattern-overlays) nil)
+  (flex-highlight-pattern-overlays)
+
   ;; Run hooks.
+  (add-hook 'after-change-functions 'flex-update-pattern-overlays)
   (run-hooks 'flex-mode-hook)
   )
+
+(defun flex-update-pattern-overlays (beg end leng-before)
+  (when (derived-mode-p 'flex-mode)
+    (let (current-point pattern-start pattern-end)
+      (setq current-point (point))
+      (save-excursion
+        ;; Search pattern bound.
+        (goto-char (point-min))
+        (when (search-forward-regexp "^%%" nil t)
+          (setq pattern-start (point)))
+        (when (search-forward-regexp "^%%" nil t)
+          (beginning-of-line)
+          (setq pattern-end (point)))
+
+        ;; Update pattern overlays when current edit point between pattern bound.
+        (when (and pattern-start
+                   pattern-end
+                   (>= current-point pattern-start)
+                   (<= current-point pattern-end))
+          (flex-highlight-pattern-overlays)
+          )))))
+
+(defun flex-highlight-pattern-overlays ()
+  ;; Clean pattern overlays.
+  (when (and (boundp 'flex-pattern-overlays)
+             flex-pattern-overlays)
+    (dolist (overlay flex-pattern-overlays)
+      (delete-overlay overlay))
+    (set (make-local-variable 'flex-pattern-overlays) nil))
+
+  ;; Search and update pattern overlay color.
+  (let (pattern-start pattern-end)
+    (save-excursion
+      ;; Search pattern bound.
+      (goto-char (point-min))
+      (when (search-forward-regexp "^%%" nil t)
+        (setq pattern-start (point)))
+      (when (search-forward-regexp "^%%" nil t)
+        (beginning-of-line)
+        (setq pattern-end (point)))
+
+      ;; Highlight patterns.
+      (when (and pattern-start pattern-end)
+        (goto-char pattern-start)
+        (while (search-forward-regexp "^[^ \n]+[^{\n]+{" pattern-end t)
+          (let (start end overlay)
+            (setq end (- (point) 1))
+            (beginning-of-line)
+            (setq start (point))
+            (end-of-line)
+            (setq overlay (make-overlay start end))
+            (overlay-put overlay 'face 'flex-font-lock-pattern-content-face)
+            (add-to-list 'flex-pattern-overlays overlay)
+            ))))))
 
 (defun flex-highlight-keywords ()
   "Highlight keywords."
@@ -144,8 +206,7 @@
    '(
      ("\\(^\\(%{\\|%}\\)\\)" 1 'flex-font-lock-declare-delimiter-face)
      ("\\(^%%\\)" 1 'flex-font-lock-pattern-delimiter-face)
-     ("\\(^\\([\"]\\|[\[]\\|[(]\\|[\.]\\|[\\]\\)[^\{]+\\)\\({.*}\\)" 1 'flex-font-lock-pattern-content-face)
-     ("\\(%option\\)" 1 'font-lock-keyword-face)
+     ("\\(%option\\|%x\\)" 1 'font-lock-keyword-face)
      ))
   (set (make-local-variable 'font-lock-keywords-only) t)
   (font-lock-mode 1))
