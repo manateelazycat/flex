@@ -66,8 +66,8 @@
 ;;; Change log:
 ;;
 ;; 2018/10/15
-;;	* Highlight comment block.
-;; 
+;;  * Highlight comment block.
+;;
 ;; 2018/10/14
 ;;      * Use overlay instead regexp to match pattern content.
 ;;      * Adjust overlay regexp to match any pattern line.
@@ -223,6 +223,7 @@
      ("\\(^%%\\)" 1 'flex-font-lock-pattern-delimiter-face)
      ("\\(%option\\|%x\\)" 1 'font-lock-keyword-face)
      ("/\\*\\s-.*\\*/" 0 'font-lock-comment-face)
+     ("#include\s+\\(\"[^\"]+\"\\)" 1 'font-lock-string-face)
      ))
   (set (make-local-variable 'font-lock-keywords-only) t)
   (font-lock-mode 1))
