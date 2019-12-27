@@ -224,6 +224,7 @@
      ("\\(%option\\|%x\\)" 1 'font-lock-keyword-face)
      ("/\\*\\s-.*\\*/" 0 'font-lock-comment-face)
      ("#include\s+\\(\"[^\"]+\"\\)" 1 'font-lock-string-face)
+     ("extern\s+\\(\"[^\"]+\"\\)" 1 'font-lock-string-face)
      ))
   (set (make-local-variable 'font-lock-keywords-only) t)
   (font-lock-mode 1))
